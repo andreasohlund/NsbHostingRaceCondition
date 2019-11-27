@@ -6,11 +6,11 @@ using NServiceBus;
 
 public class DoPublish : IHostedService
 {
-    IMessageSession session;
+    IServiceProvider serviceProvider;
 
-    public DoPublish(IMessageSession session)
+    public DoPublish(IServiceProvider serviceProvider)
     {
-        this.session = session;
+        this.serviceProvider = serviceProvider;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -19,7 +19,7 @@ public class DoPublish : IHostedService
         {
             OrderId = Guid.NewGuid()
         };
-        return session.Publish(orderReceived);
+        return ((IMessageSession)serviceProvider.GetService(typeof(IMessageSession))).Publish(orderReceived);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
